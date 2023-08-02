@@ -1,0 +1,147 @@
+﻿
+@{
+    Layout = null;
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+<div class="container">
+    <br />
+    <br />
+    <h3>Müşteri İşlemleri</h3>
+    <button type="button" id="btnlist" class="btn btn-outline-primary">Müşteri Listesi</button>
+    <button type="button" id="btnadd" class="btn btn-outline-success">Müşteri Ekle</button>
+    <button type="button" id="btnget" class="btn btn-outline-info">Müşteri Getir</button>
+    <button type="button" id="btndel" class="btn btn-outline-danger">Müşteri Sil</button>
+    <button type="button" id="btnupdate" class="btn btn-outline-dark">Müşteri Güncelle</button>
+    <br />
+    <hr />
+    <div>
+        <h3>Müşteri Ekleme Paneli</h3>
+        <label>Müşteri Ad</label>
+        <input type="text" class="form-control" id="txtname"/>
+        <br />
+        <label>Müşteri Soyad</label>
+        <input type="text" class="form-control" id="txtsurname" />
+        <br />
+        <label>Müşteri Şehir</label>
+        <input type="text" class="form-control" id="txtcity" />
+        <br />
+        <hr />
+        <h3>Müşteri Sil</h3>
+        <label>Müşteri ID</label>
+        <input type="text" id="txtid" class="form-control"/>
+        <br />
+        <hr />
+         <h3>Müşteri Getir</h3>
+        <label>Müşteri ID</label>
+        <input type="text" id="txtgetid" class="form-control"/>
+        <br />
+        <hr />
+         <h3>Müşteri Güncelleme Paneli</h3>
+          <label>Müşteri ID</label>
+        <input type="text" class="form-control" id="txtupdateid"/>
+        <br />
+        <label>Müşteri Ad</label>
+        <input type="text" class="form-control" id="txtupdatename"/>
+        <br />
+        <label>Müşteri Soyad</label>
+        <input type="text" class="form-control" id="txtupdatesurname" />
+        <br />
+           <label>Müşteri Şehir</label>
+        <input type="text" class="form-control" id="txtupdatecity" />
+        <br />
+         <hr />
+    </div>
+   
+        <div id="customerlist">
+            <h3>Liste</h3>
+        </div>
+
+    <script>
+        $("#btnlist").click(function(){
+            $.ajax({
+                contentType:"application/json",
+                dataType:"json",
+                type:"Get",
+                url: "/Default/CustomerList",
+                success:function(func1){
+                    let values = jQuery.parseJSON(func1);
+                    console.log(values);
+                    let tablehtml = "<table class=table table-bordered><tr><th>ID</th><th>Ad</th><th>Soyad</th><th>Şehir</th></tr>";
+
+                       $.each(values, (index, value) => {
+                    tablehtml += `<tr><td>${value.CustomerID}</td><td>${value.CustomerName}</td><td>${value.CustomerSurname}</td><td>${value.CustomerCity}</td></tr>`
+
+                     });
+                tablehtml += "</table>";
+                $("#customerlist").html(tablehtml);
+
+                }
+            })
+        })
+
+        $("#btnadd").click(function(){
+            let values = {
+                CustomerName:$("#txtname").val(),
+                CustomerSurname:$("#txtsurname").val(),
+                CustomerCity:$("#txtcity").val(),
+            };
+            $.ajax({
+                type:"Post",
+                url:"/Default/AddCustomer/",
+                data:values,
+                success:function(func2){
+                    let  result = jQuery.parseJSON(func2);
+                    alert("Müşteri başarılı bir şekilde kaydedildi.");
+                }
+            })
+        })
+
+        $("#btndel").click(function(){
+            let id =$("#txtid").val();
+            $.ajax({
+                contentType:"application/json",
+                dataType:"json",
+                type:"Get",
+                url:"/Default/DeleteCustomer/"+id,
+                success:function(func3){
+                    alert("Müşteri aşarılı bir şekilde silindi.");
+                }
+            })
+        })
+        $("#btnget").click(function(){
+            let id = $("#txtgetid").val();
+            $.ajax({
+                contentType:"application/json",
+                dataType:"json",
+                type:"Get",
+                url:"/Default/GetCustomer/"+id,
+                success:function(func4){
+                    var value = jQuery.parseJSON(func4);
+                    let tablehtml="<table class=table table-bordered><tr><td>ID</td><td>Ad</td><td>Soyad</td><td>Şehir</td><tr>";
+                    tablehtml+=`<tr><td>${value.CustomerID}</td><td>${value.CustomerName}</td><td>${value.CustomerSurname}</td><td>${value.CustomerCity}</td></tr></table>`;
+                    $("#customerlist").html(tablehtml);
+
+                }
+            })
+        })
+
+        $("#btnupdate").click(function(){
+            let value ={
+                CustomerID:$("#txtupdateid").val(),
+                CustomerName:$("#txtupdatename").val(),
+                CustomerSurname:$("#txtupdatesurname").val(),
+                CustomerCity:$("#txtupdatecity").val(),
+            };
+            $.ajax({
+                type:"Post",
+                url:"/Default/UpdateCustomer/",
+                data:value,
+                success:function(func5){
+                    let v = jQuery.parseJSON(func5);
+                    alert("Güncelleme işlemi başarılı");
+                }
+            })
+        })
+    </script>
+</div>
